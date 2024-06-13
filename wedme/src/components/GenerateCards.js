@@ -3,7 +3,9 @@ import React, { useState } from 'react';
 const GenerateCards = () => {
   const [eventType, setEventType] = useState('');
   const [theme, setTheme] = useState('');
-  const [date, setDate] = useState('');
+  const [coupleName, setCoupleName] = useState('');
+  const [eventDate, setEventDate] = useState('');
+  const [eventLocation, setEventLocation] = useState('');
   const [photoUrl, setPhotoUrl] = useState('');
   const [messages, setMessages] = useState([
     { text: 'AI: How can I help you with your card generation today?', sender: 'ai' }
@@ -18,7 +20,7 @@ const GenerateCards = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ event_type: eventType, theme }),
+        body: JSON.stringify({ event_type: eventType, theme, couple_name: coupleName, event_date: eventDate, event_location: eventLocation }),
       });
 
       const data = await response.json();
@@ -31,6 +33,7 @@ const GenerateCards = () => {
   };
 
   const handleAddDate = async (date) => {
+    setEventDate(date);
     setMessages([...messages, { text: `User: ${date}`, sender: 'user' }, { text: 'AI: Thank you! Now, do you have any additional information or instructions for the card?', sender: 'ai' }]);
     setStage('add_instructions');
   };
@@ -47,7 +50,7 @@ const GenerateCards = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ event_type: eventType, theme, photo_url: photoUrl }),
+        body: JSON.stringify({ event_type: eventType, theme, couple_name: coupleName, event_date: eventDate, event_location: eventLocation, photo_url: photoUrl }),
       });
 
       const data = await response.json();
@@ -98,6 +101,24 @@ const GenerateCards = () => {
                 <option value="traditional">Traditional</option>
                 <option value="vintage">Vintage</option>
               </select>
+            </label>
+            <label>
+              Couple's Name:
+              <input
+                type="text"
+                value={coupleName}
+                onChange={(e) => setCoupleName(e.target.value)}
+                placeholder="Enter couple's name"
+              />
+            </label>
+            <label>
+              Event Location:
+              <input
+                type="text"
+                value={eventLocation}
+                onChange={(e) => setEventLocation(e.target.value)}
+                placeholder="Enter event location"
+              />
             </label>
             <button className="start-chat-btn" onClick={handleSelectEvent}>Select Event</button>
           </>
