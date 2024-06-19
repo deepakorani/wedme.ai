@@ -4,12 +4,10 @@ from langchain.chains import LLMChain
 from langchain import PromptTemplate
 from langchain import OpenAI
 from openai import OpenAI as op
-from flask import Flask, request, jsonify, render_template, redirect, url_for
-from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_bcrypt import Bcrypt
-from flask_migrate import  Migrate
+from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
 import openai
 import os
@@ -27,15 +25,14 @@ client = op(api_key=OPENAI_API_KEY)
 # Set up LangChain with OpenAI LLM
 llm = OpenAI(api_key=OPENAI_API_KEY)
 prompt_template = PromptTemplate(
-    input_variables=["event_type", "theme", "couple_name", "event_date", "event_location"],
-    template="Thank you for selecting the event type '{event_type}' and theme '{theme}'. The couple's name is '{couple_name}', the event date is '{event_date}', and the event location is '{event_location}'."
+    input_variables=["event_type", "theme", "event_date"],
+    template="Thank you for selecting the event type '{event_type}', theme '{theme}', and date '{event_date}'. Is there a location you would like to add?"
 )
 chain = LLMChain(llm=llm, prompt=prompt_template)
 
 bcrypt = Bcrypt(app)
 
 # Configurations
-app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -78,10 +75,8 @@ def login():
     
     user = User.query.filter_by(email=email).first()
     if user and check_password_hash(user.password, password):
-        # In a real application, you would generate and return a JWT or similar token here
         return jsonify({'token': 'dummy-token'}), 200
     return jsonify({'message': 'Invalid credentials'}), 401
-
 
 @app.route('/logout')
 @login_required
@@ -94,19 +89,12 @@ def select_event():
     data = request.json
     event_type = data.get('event_type')
     theme = data.get('theme')
-    couple_name = data.get('couple_name')
-    event_location = data.get('event_location')
     event_date = data.get('event_date')
-    if not event_type or not theme or not couple_name  or not event_location or not event_date :
-        return jsonify({'message': 'Error: All fields are required'}), 400
 
-    prompt_variables = {
-        "event_type": event_type,
-        "theme": theme,
-        "couple_name": couple_name,
-        "event_location": event_location,
-        "event_date": event_date,
-    }
+    if not event_type or not theme or not event_date:
+        return jsonify({'message': 'Error: Event type, theme, and event date are required'}), 400
+
+    prompt_variables = {"event_type": event_type, "theme": theme, "event_date": event_date}
     response_message = chain.run(prompt_variables)
 
     return jsonify({'message': response_message})
@@ -121,15 +109,7 @@ def generate_image():
     event_location = data.get('event_location')
     photo_url = data.get('photo_url')
 
-    prompt = (
-        f"Design a {theme} wedding invitation card for the {event_type} of {couple_name} "
-        f"taking place at {event_location} on {event_date}. "
-        f"The card should only and only include the names of the couple, the date, and the location prominently. "
-        f"Use elegant fonts, and a layout suitable for a digital wedding invitation card. "
-        f"Please make sure the grammar in the card makes sense and is worded right"
-        f"Ensure the card is visually appealing with appropriate dimensions for a digital wedding invitation. "
-        f"Colors should be harmonious and fitting the {theme} theme. "
-    )
+    prompt = f"Generate a {theme} card for a {event_type} of {couple_name} at {event_location} on {event_date}."
     if photo_url:
         prompt += f" Include the reference photo: {photo_url}"
 
@@ -141,12 +121,36 @@ def generate_image():
             quality="standard",
             n=1
         )
-        # Access the URL from the response object correctly
+
         image_url = response.data[0].url
         return jsonify({'image_url': image_url})
     except Exception as e:
         print(f"Exception: {e}")
         return jsonify({'message': 'Error: Unable to process your request'}), 500
+
+@app.route('/api/generate_design', methods=['POST'])
+def generate_design():
+    data = request.json
+    description = data.get('description')
+
+    if not description:
+        return jsonify({'message': 'Error: Design description is required'}), 400
+    
+    prompt = f"Generate a design: {description}"
+    try:
+        response = client.images.generate(
+            model="dall-e-3",
+            prompt=prompt,
+            size="1024x1024",
+            quality="standard",
+            n=1
+        )
+        image_url = response.data[0].url
+        return jsonify({'image_url': image_url})
+    except Exception as e:
+        print(f"Exception: {e}")
+        return jsonify({'message': 'Error: Unable to process your request'}), 500
+
 
 if __name__ == '__main__':
     with app.app_context():

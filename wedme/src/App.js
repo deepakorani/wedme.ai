@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import './App.css';
+import GenerateDesign from './components/GenerateDesign';
 import GenerateCards from './components/GenerateCards';
 import Signup from './components/Signup';
 import Login from './components/Login';
@@ -40,6 +41,7 @@ const App = () => {
           <button className="nav-item new-chat">New Chat</button>
           <button className="nav-item">Chat with Document</button>
           <button className="nav-item">Generate Venues</button>
+          <button className="nav-item" onClick={() => setSelectedFeature('generateDesign')}>Generate Design</button>
           <button className="nav-item" onClick={() => setSelectedFeature('generateCards')}>Generate Cards</button>
           <button className="nav-item">Chat History</button>
         </nav>
@@ -82,6 +84,7 @@ const App = () => {
                 </div>
               </section>
               {selectedFeature === 'generateCards' && <GenerateCards />}
+              {selectedFeature === 'generateDesign' && <GenerateDesign />}
             </>
           ) : (
             <Navigate to="/login" />
