@@ -5,6 +5,7 @@ import GenerateDesign from './components/GenerateDesign';
 import GenerateCards from './components/GenerateCards';
 import Signup from './components/Signup';
 import Login from './components/Login';
+import VendorManagement from './components/VendorManagement';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -40,7 +41,7 @@ const App = () => {
         <nav className="nav">
           <button className="nav-item new-chat">New Chat</button>
           <button className="nav-item">Chat with Document</button>
-          <button className="nav-item">Generate Venues</button>
+          <button className="nav-item" onClick={() => setSelectedFeature('generateVenues')}>Generate Venues</button>
           <button className="nav-item" onClick={() => setSelectedFeature('generateDesign')}>Generate Design</button>
           <button className="nav-item" onClick={() => setSelectedFeature('generateCards')}>Generate Cards</button>
           <button className="nav-item">Chat History</button>
@@ -62,27 +63,7 @@ const App = () => {
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/" element={isAuthenticated ? (
             <>
-              <section className="chat-with-doc">
-                <h3>Chat with Document</h3>
-                <div className="upload-area">
-                  <div className="upload-box">
-                    <span className="upload-text">Click to Upload or Drop PDF/DOC here</span>
-                    <button className="upload-btn">Upload Files</button>
-                    <a href="#" className="upload-url">From URL</a>
-                  </div>
-                </div>
-              </section>
-              <section className="ai-tools">
-                <div className="ai-presentation">
-                  <h3>AI Presentation</h3>
-                  <button className="tool-btn">Enter topic</button>
-                  <button className="tool-btn">Enhance file</button>
-                </div>
-                <div className="ai-image">
-                  <h3>AI Image</h3>
-                  <button className="tool-btn">View templates</button>
-                </div>
-              </section>
+              {selectedFeature === 'generateVenues' && <VendorManagement />}
               {selectedFeature === 'generateCards' && <GenerateCards />}
               {selectedFeature === 'generateDesign' && <GenerateDesign />}
             </>

@@ -1,11 +1,11 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from langchain.chains import LLMChain
-from langchain import PromptTemplate
-from langchain import OpenAI
-from openai import OpenAI as op
+from langchain_core.prompts import PromptTemplate
+from langchain_community.llms import OpenAI
+import openai
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_login import LoginManager, UserMixin, login_required, logout_user, current_user
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -21,7 +21,9 @@ CORS(app)
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 openai.api_key = OPENAI_API_KEY
-client = op(api_key=OPENAI_API_KEY)
+client = OpenAI(
+    api_key = OPENAI_API_KEY,
+)
 # Set up LangChain with OpenAI LLM
 llm = OpenAI(api_key=OPENAI_API_KEY)
 prompt_template = PromptTemplate(
@@ -83,6 +85,19 @@ def login():
 def logout():
     logout_user()
     return jsonify({'message': 'Logged out successfully'})
+
+@app.route('/generate', methods=['POST'])
+def generate_text():
+    try:
+        user_input = request.json.get('prompt', '')
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",  # Ensure the model name is correct
+            messages=[{"role": "user", "content": user_input}]
+        )
+        return jsonify({'response': response['choices'][0]['message']['content']})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 
 @app.route('/api/select_event', methods=['POST'])
 def select_event():
