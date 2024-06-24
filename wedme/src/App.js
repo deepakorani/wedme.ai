@@ -39,8 +39,8 @@ const App = () => {
           <h1>Wedme.ai</h1>
         </div>
         <nav className="nav">
-          <button className="nav-item new-chat">New Chat</button>
-          <button className="nav-item">Chat with Document</button>
+          {/* <button className="nav-item new-chat">New Chat</button> */}
+          {/* <button className="nav-item">Chat with Document</button> */}
           <button className="nav-item" onClick={() => setSelectedFeature('generateVenues')}>Generate Venues</button>
           <button className="nav-item" onClick={() => setSelectedFeature('generateDesign')}>Generate Design</button>
           <button className="nav-item" onClick={() => setSelectedFeature('generateCards')}>Generate Cards</button>
