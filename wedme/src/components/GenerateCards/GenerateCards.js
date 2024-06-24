@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import styles from './GenerateCards.module.css';
 
 const GenerateCards = () => {
   const [eventType, setEventType] = useState('');
@@ -79,30 +80,30 @@ const GenerateCards = () => {
   };
 
   return (
-    <div className="generate-cards">
+    <div className={styles.container}>
       <h3>Generate Cards</h3>
-      <div className="filter-container">
+      <div className={styles.filterContainer}>
         {stage === 'select_event' && (
           <>
-            <label>
+            <label className={styles.label}>
               Event Type:
-              <select value={eventType} onChange={(e) => setEventType(e.target.value)}>
+              <select className={styles.select} value={eventType} onChange={(e) => setEventType(e.target.value)}>
                 <option value="">Select Event Type</option>
                 <option value="wedding">Wedding</option>
                 <option value="birthday">Birthday</option>
                 <option value="anniversary">Anniversary</option>
               </select>
             </label>
-            <label>
+            <label className={styles.label}>
               Theme:
-              <select value={theme} onChange={(e) => setTheme(e.target.value)}>
+              <select className={styles.select} value={theme} onChange={(e) => setTheme(e.target.value)}>
                 <option value="">Select Theme</option>
                 <option value="modern">Modern</option>
                 <option value="traditional">Traditional</option>
                 <option value="vintage">Vintage</option>
               </select>
             </label>
-            <label>
+            <label className={styles.label}>
               Couple's Name:
               <input
                 type="text"
@@ -111,7 +112,7 @@ const GenerateCards = () => {
                 placeholder="Enter couple's name"
               />
             </label>
-            <label>
+            <label className={styles.label}>
               Event Location:
               <input
                 type="text"
@@ -120,7 +121,7 @@ const GenerateCards = () => {
                 placeholder="Enter event location"
               />
             </label>
-            <button className="start-chat-btn" onClick={handleSelectEvent}>Select Event</button>
+            <button className={styles.button} onClick={handleSelectEvent}>Select Event</button>
           </>
         )}
         {stage === 'add_date' && (
@@ -135,17 +136,17 @@ const GenerateCards = () => {
         )}
         {stage === 'generate_image' && (
           <>
-            <label>
+            <label className={styles.label}>
               Photo URL:
               <input type="text" value={photoUrl} onChange={(e) => setPhotoUrl(e.target.value)} placeholder="Optional Photo URL" />
             </label>
-            <button className="start-chat-btn" onClick={handleGenerateImage}>Generate Image</button>
+            <button className={styles.button} onClick={handleGenerateImage}>Generate Image</button>
           </>
         )}
       </div>
-      <div className="chatbox">
+      <div className={styles.chatbox}>
         {messages.map((msg, index) => (
-          <p key={index} className={msg.sender === 'ai' ? 'ai-message' : 'user-message'}>
+          <p key={index} className={msg.sender === 'ai' ? styles.aiMessage : styles.userMessage}>
             {msg.text}
           </p>
         ))}

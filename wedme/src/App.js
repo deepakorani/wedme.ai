@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import './App.css';
-import GenerateDesign from './components/GenerateDesign';
-import GenerateCards from './components/GenerateCards';
+import GenerateDesign from './components/GenerateDesigns/GenerateDesign';
+import GenerateCards from './components/GenerateCards/GenerateCards';
 import Signup from './components/Signup';
 import Login from './components/Login';
-import VendorManagement from './components/VendorManagement';
+import VendorManagement from './components/VendorManagement/VendorManagement';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
