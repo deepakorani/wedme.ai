@@ -8,6 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_required, logout_user, current_user
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
+from openai import OpenAI as op_object
 from werkzeug.security import generate_password_hash, check_password_hash
 import openai
 import os
@@ -21,10 +22,7 @@ CORS(app)
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 openai.api_key = OPENAI_API_KEY
-client = OpenAI(
-    api_key = OPENAI_API_KEY,
-)
-# Set up LangChain with OpenAI LLM
+clients = op_object(api_key= OPENAI_API_KEY)
 llm = OpenAI(api_key=OPENAI_API_KEY)
 prompt_template = PromptTemplate(
     input_variables=["event_type", "theme", "event_date"],
@@ -90,11 +88,12 @@ def logout():
 def generate_text():
     try:
         user_input = request.json.get('prompt', '')
-        response = openai.ChatCompletion.create(
+        response = clients.chat.completions.create(
             model="gpt-3.5-turbo",  # Ensure the model name is correct
             messages=[{"role": "user", "content": user_input}]
         )
-        return jsonify({'response': response['choices'][0]['message']['content']})
+        return jsonify({'response': response.choices[0].message.content
+})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -129,7 +128,7 @@ def generate_image():
         prompt += f" Include the reference photo: {photo_url}"
 
     try:
-        response = client.images.generate(
+        response = clients.images.generate(
             model="dall-e-3",
             prompt=prompt,
             size="1024x1024",
@@ -153,7 +152,7 @@ def generate_design():
     
     prompt = f"Generate a design: {description}"
     try:
-        response = client.images.generate(
+        response = clients.images.generate(
             model="dall-e-3",
             prompt=prompt,
             size="1024x1024",
