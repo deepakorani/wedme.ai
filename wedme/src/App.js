@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import './App.css';
-import GenerateDesign from './components/GenerateDesign';
-import GenerateCards from './components/GenerateCards';
+import GenerateDesign from './components/GenerateDesigns/GenerateDesign';
+import GenerateCards from './components/GenerateCards/GenerateCards';
 import Signup from './components/Signup';
 import Login from './components/Login';
-import VendorManagement from './components/VendorManagement';
+import VendorManagement from './components/VendorManagement/VendorManagement';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -39,8 +39,8 @@ const App = () => {
           <h1>Wedme.ai</h1>
         </div>
         <nav className="nav">
-          <button className="nav-item new-chat">New Chat</button>
-          <button className="nav-item">Chat with Document</button>
+          {/* <button className="nav-item new-chat">New Chat</button> */}
+          {/* <button className="nav-item">Chat with Document</button> */}
           <button className="nav-item" onClick={() => setSelectedFeature('generateVenues')}>Generate Venues</button>
           <button className="nav-item" onClick={() => setSelectedFeature('generateDesign')}>Generate Design</button>
           <button className="nav-item" onClick={() => setSelectedFeature('generateCards')}>Generate Cards</button>

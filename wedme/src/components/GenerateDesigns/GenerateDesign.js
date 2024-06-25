@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import styles from './GenerateDesigns.module.css';  
 
 const GenerateDesign = () => {
   const [description, setDescription] = useState('');
@@ -40,23 +41,24 @@ const GenerateDesign = () => {
   };
 
   return (
-    <div className="generate-design">
-      <h3>Generate Design</h3>
-      <div className="input-container">
+    <div className={styles.generateDesign}>
+      <h3 className={styles.title}>Generate Design</h3>
+      <div className={styles.inputContainer}>
         <input
+          className={styles.input}
           type="text"
           placeholder="Enter the design description..."
           onKeyDown={handleUserInput}
         />
       </div>
-      <div className="chatbox">
+      <div className={styles.chatbox}>
         {messages.map((msg, index) => (
-          <p key={index} className={msg.sender === 'ai' ? 'ai-message' : 'user-message'}>
+          <p key={index} className={msg.sender === 'ai' ? styles.aiMessage : styles.userMessage}>
             {msg.text}
           </p>
         ))}
         {imageUrl && (
-          <div className="generated-image">
+          <div className={styles.generatedImage}>
             <h4>Generated Image:</h4>
             <img src={imageUrl} alt="Generated" style={{ maxWidth: '100%', height: 'auto' }} />
           </div>
