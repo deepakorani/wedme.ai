@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from 'r
 import './App.css';
 import GenerateDesign from './components/GenerateDesigns/GenerateDesign';
 import GenerateCards from './components/GenerateCards/GenerateCards';
+import GenerateMenu from './components/GenerateMenu/GenerateMenu';
 import Signup from './components/Signup';
 import Login from './components/Login';
 import VendorManagement from './components/VendorManagement/VendorManagement';
@@ -42,8 +43,9 @@ const App = () => {
           {/* <button className="nav-item new-chat">New Chat</button> */}
           {/* <button className="nav-item">Chat with Document</button> */}
           <button className="nav-item" onClick={() => setSelectedFeature('generateVenues')}>Generate Venues</button>
-          <button className="nav-item" onClick={() => setSelectedFeature('generateDesign')}>Generate Design</button>
+          <button className="nav-item" onClick={() => setSelectedFeature('generateDesign')}>Generate Venue Designs</button>
           <button className="nav-item" onClick={() => setSelectedFeature('generateCards')}>Generate Cards</button>
+          <button className="nav-item" onClick={() => setSelectedFeature('generateMenu')}>Generate Catering Menu</button>
           <button className="nav-item">Chat History</button>
         </nav>
         <div className="signup">
@@ -66,6 +68,7 @@ const App = () => {
               {selectedFeature === 'generateVenues' && <VendorManagement />}
               {selectedFeature === 'generateCards' && <GenerateCards />}
               {selectedFeature === 'generateDesign' && <GenerateDesign />}
+              {selectedFeature === 'generateMenu' && <GenerateMenu />}
             </>
           ) : (
             <Navigate to="/login" />

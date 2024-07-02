@@ -84,8 +84,21 @@ def logout():
     logout_user()
     return jsonify({'message': 'Logged out successfully'})
 
-@app.route('/generate', methods=['POST'])
+@app.route('/generate', methods=['post'])
 def generate_text():
+    try:
+        user_input = request.json.get('prompt', '')
+        response = clients.chat.completions.create(
+            model="gpt-3.5-turbo",  # Ensure the model name is correct
+            messages=[{"role": "user", "content": user_input}]
+        )
+        return jsonify({'response': response.choices[0].message.content})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/generatemenu', methods=['POST'])
+def generate_():
     try:
         user_input = request.json.get('prompt', '')
         response = clients.chat.completions.create(
@@ -97,7 +110,6 @@ def generate_text():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-
 @app.route('/api/select_event', methods=['POST'])
 def select_event():
     data = request.json
@@ -105,10 +117,10 @@ def select_event():
     theme = data.get('theme')
     event_date = data.get('event_date')
 
+    prompt_variables = {"event_type": event_type, "theme": theme, "event_date": event_date}
+
     if not event_type or not theme or not event_date:
         return jsonify({'message': 'Error: Event type, theme, and event date are required'}), 400
-
-    prompt_variables = {"event_type": event_type, "theme": theme, "event_date": event_date}
     response_message = chain.run(prompt_variables)
 
     return jsonify({'message': response_message})
