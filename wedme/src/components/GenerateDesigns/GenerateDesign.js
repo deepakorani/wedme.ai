@@ -5,7 +5,7 @@ const GenerateDesign = () => {
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState(null);
   const [messages, setMessages] = useState([
-    { text: 'AI: How can I help you with your design generation today?', sender: 'ai' }
+    { text: 'AI: How can I help you with your venue design generation today?', sender: 'ai' }
   ]);
 
   const handleGenerateDesign = async () => {
@@ -42,12 +42,12 @@ const GenerateDesign = () => {
 
   return (
     <div className={styles.generateDesign}>
-      <h3 className={styles.title}>Generate Design</h3>
+      <h3 className={styles.title}>Generate Venue Designs</h3>
       <div className={styles.inputContainer}>
         <input
           className={styles.input}
           type="text"
-          placeholder="Enter the design description..."
+          placeholder="Enter the venue design description..Ex: mandap design for an outdoor beach wedding"
           onKeyDown={handleUserInput}
         />
       </div>
