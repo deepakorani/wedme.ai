@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import './App.css';
+import { FaUsers, FaBuilding, FaClipboard, FaUtensils, FaHistory } from 'react-icons/fa';
 import GenerateDesign from './components/GenerateDesigns/GenerateDesign';
 import GenerateCards from './components/GenerateCards/GenerateCards';
 import GenerateMenu from './components/GenerateMenu/GenerateMenu';
@@ -40,13 +41,21 @@ const App = () => {
           <h1>Wedme.ai</h1>
         </div>
         <nav className="nav">
-          {/* <button className="nav-item new-chat">New Chat</button> */}
-          {/* <button className="nav-item">Chat with Document</button> */}
-          <button className="nav-item" onClick={() => setSelectedFeature('generateVendors')}>Generate Vendors</button>
-          <button className="nav-item" onClick={() => setSelectedFeature('generateDesign')}>Generate Venue Designs</button>
-          <button className="nav-item" onClick={() => setSelectedFeature('generateCards')}>Generate Cards</button>
-          <button className="nav-item" onClick={() => setSelectedFeature('generateMenu')}>Generate Catering Menu</button>
-          <button className="nav-item">Chat History</button>
+          <button className="nav-item" onClick={() => setSelectedFeature('generateVendors')}>
+            <FaUsers className="nav-icon" /> Generate Vendors
+          </button>
+          <button className="nav-item" onClick={() => setSelectedFeature('generateDesign')}>
+            <FaBuilding className="nav-icon" /> Generate Venue Designs
+          </button>
+          <button className="nav-item" onClick={() => setSelectedFeature('generateCards')}>
+            <FaClipboard className="nav-icon" /> Generate Cards
+          </button>
+          <button className="nav-item" onClick={() => setSelectedFeature('generateMenu')}>
+            <FaUtensils className="nav-icon" /> Generate Catering Menu
+          </button>
+          <button className="nav-item">
+            <FaHistory className="nav-icon" /> Chat History
+          </button>
         </nav>
         <div className="signup">
           {isAuthenticated ? (
