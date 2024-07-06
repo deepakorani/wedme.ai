@@ -84,29 +84,58 @@ def logout():
     logout_user()
     return jsonify({'message': 'Logged out successfully'})
 
-@app.route('/generate', methods=['post'])
-def generate_text():
+@app.route('/generatevendors', methods=['POST'])
+def generate_vendors():
     try:
-        user_input = request.json.get('prompt', '')
+        vendor_type = request.json.get('vendorType', '')
+        budget = request.json.get('budget', '')
+        location = request.json.get('location', '')
+
+        # Construct the prompt based on the inputs
+         # Construct the prompt based on the inputs
+        user_input = (f"Generate a list of vendors for {vendor_type} within a budget of {budget} "
+                      f"in {location}. Include the name of the vendor and a short description.")
+
+
         response = clients.chat.completions.create(
             model="gpt-3.5-turbo",  # Ensure the model name is correct
             messages=[{"role": "user", "content": user_input}]
         )
-        return jsonify({'response': response.choices[0].message.content})
+        message_content = response.choices[0].message.content
+        vendors = message_content.split('\n')
+        vendor_list = []
+        for vendor in vendors:
+            if vendor.strip():  # Only add non-empty strings
+                parts = vendor.split(':', 1)
+                if len(parts) == 2:
+                    name, description = parts
+                    vendor_list.append({'name': name.strip(), 'description': description.strip()})
+                else:
+                    vendor_list.append({'name': parts[0].strip(), 'description': ''})
+        
+        return jsonify({'response': vendor_list})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
 
 @app.route('/generatemenu', methods=['POST'])
 def generate_():
     try:
-        user_input = request.json.get('prompt', '')
+        cuisine = request.json.get('cuisine', '')
+        num_entrees = request.json.get('numEntrees', 0)
+        num_appetizers = request.json.get('numAppetizers', 0)
+        num_desserts = request.json.get('numDesserts', 0)
+
+        # Construct the prompt based on the inputs
+        user_input = (f"Generate a menu with {num_entrees} entrees, "
+                      f"{num_appetizers} appetizers, and {num_desserts} desserts "
+                      f"for a {cuisine} cuisine. Only stick to the inputs provided, if negative options selected state, this isn't possible.")
+
         response = clients.chat.completions.create(
             model="gpt-3.5-turbo",  # Ensure the model name is correct
             messages=[{"role": "user", "content": user_input}]
         )
-        return jsonify({'response': response.choices[0].message.content
-})
+        
+        return jsonify({'response': response.choices[0].message.content})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
