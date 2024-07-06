@@ -322,6 +322,15 @@ body, html {
   background: #a264ea;
 }
 
+/* Add this to your existing App.css file */
+
+.nav-icon {
+  margin-right: 10px;
+  font-size: 18px; /* Adjust the size as needed */
+  vertical-align: middle;
+}
+
+
 /* Media queries for responsiveness */
 @media (max-width: 768px) {
   .container {
@@ -341,3 +350,4 @@ body, html {
     flex-direction: column;
   }
 }
+
