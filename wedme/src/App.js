@@ -6,7 +6,7 @@ import GenerateCards from './components/GenerateCards/GenerateCards';
 import GenerateMenu from './components/GenerateMenu/GenerateMenu';
 import Signup from './components/Signup';
 import Login from './components/Login';
-import VendorManagement from './components/VendorManagement/VendorManagement';
+import GenerateVendors from './components/GenerateVendors/GenerateVendors';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -42,7 +42,7 @@ const App = () => {
         <nav className="nav">
           {/* <button className="nav-item new-chat">New Chat</button> */}
           {/* <button className="nav-item">Chat with Document</button> */}
-          <button className="nav-item" onClick={() => setSelectedFeature('generateVenues')}>Generate Venues</button>
+          <button className="nav-item" onClick={() => setSelectedFeature('generateVendors')}>Generate Vendors</button>
           <button className="nav-item" onClick={() => setSelectedFeature('generateDesign')}>Generate Venue Designs</button>
           <button className="nav-item" onClick={() => setSelectedFeature('generateCards')}>Generate Cards</button>
           <button className="nav-item" onClick={() => setSelectedFeature('generateMenu')}>Generate Catering Menu</button>
@@ -65,7 +65,7 @@ const App = () => {
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/" element={isAuthenticated ? (
             <>
-              {selectedFeature === 'generateVenues' && <VendorManagement />}
+              {selectedFeature === 'generateVendors' && <GenerateVendors />}
               {selectedFeature === 'generateCards' && <GenerateCards />}
               {selectedFeature === 'generateDesign' && <GenerateDesign />}
               {selectedFeature === 'generateMenu' && <GenerateMenu />}

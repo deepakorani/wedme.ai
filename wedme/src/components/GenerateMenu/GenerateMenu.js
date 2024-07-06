@@ -2,7 +2,10 @@ import React, { useState } from 'react';
 import styles from './GenerateMenu.module.css';
 
 const GenerateMenu = () => {
-  const [prompt, setPrompt] = useState('');
+  const [cuisine, setCuisine] = useState('');
+  const [numEntrees, setNumEntrees] = useState('');
+  const [numAppetizers, setNumAppetizers] = useState('');
+  const [numDesserts, setNumDesserts] = useState('');
   const [response, setResponse] = useState({ desserts: [], appetizers: [], entrees: [], error: '' });
 
   const sendPrompt = () => {
@@ -11,7 +14,7 @@ const GenerateMenu = () => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ prompt })
+      body: JSON.stringify({ cuisine, numEntrees, numAppetizers, numDesserts })
     })
     .then(response => response.json())
     .then(data => {
@@ -51,15 +54,46 @@ const GenerateMenu = () => {
 
   return (
     <div className={styles.container}>
-      <h1>Menu Prompts!</h1>
-      <textarea
-        className={styles.input}
-        value={prompt}
-        onChange={e => setPrompt(e.target.value)}
-        rows="4"
-        cols="50"
-      ></textarea><br />
-      <button className={styles.button} onClick={sendPrompt}>Generate</button>
+      <h1>Menu Generator</h1>
+      <div className={styles.form}>
+        <label className={styles.label}>
+          Cuisine:
+          <input
+            type="text"
+            value={cuisine}
+            onChange={e => setCuisine(e.target.value)}
+            className={styles.input}
+          />
+        </label>
+        <label className={styles.label}>
+          Number of Entrees:
+          <input
+            type="number"
+            value={numEntrees}
+            onChange={e => setNumEntrees(e.target.value)}
+            className={styles.input}
+          />
+        </label>
+        <label className={styles.label}>
+          Number of Appetizers:
+          <input
+            type="number"
+            value={numAppetizers}
+            onChange={e => setNumAppetizers(e.target.value)}
+            className={styles.input}
+          />
+        </label>
+        <label className={styles.label}>
+          Number of Desserts:
+          <input
+            type="number"
+            value={numDesserts}
+            onChange={e => setNumDesserts(e.target.value)}
+            className={styles.input}
+          />
+        </label>
+        <button className={styles.button} onClick={sendPrompt}>Generate Menu</button>
+      </div>
       {response.error && <p>{response.error}</p>}
       <div>
         {response.desserts.length > 0 && (
@@ -125,3 +159,4 @@ const GenerateMenu = () => {
 };
 
 export default GenerateMenu;
+
