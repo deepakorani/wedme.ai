@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Signup = () => {
+const Signup = ({ onSignup }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    setError(''); // Reset any previous error
-    console.log("Signup form submitted with email:", email);
+    console.log("Attempting to sign up with email:", email);
     try {
       const response = await fetch('http://127.0.0.1:5000/signup', {
         method: 'POST',
@@ -19,16 +17,15 @@ const Signup = () => {
       });
 
       if (response.ok) {
-        console.log("Signup successful");
-        navigate('/login');
-      } else {
         const data = await response.json();
-        console.error("Signup failed:", data.message);
-        setError(data.message || 'Signup failed');
+        console.log("Signup successful, received token:", data.token);
+        onSignup(data.token);
+        navigate('/');
+      } else {
+        console.error('Signup failed', response.statusText);
       }
     } catch (error) {
-      console.error('Signup error:', error);
-      setError('An error occurred. Please try again.');
+      console.error('Error during signup:', error);
     }
   };
 
@@ -42,7 +39,6 @@ const Signup = () => {
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         <button type="submit">Signup</button>
       </form>
-      {error && <p className="error">{error}</p>}
     </div>
   );
 };

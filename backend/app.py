@@ -94,7 +94,7 @@ def generate_vendors():
         # Construct the prompt based on the inputs
          # Construct the prompt based on the inputs
         user_input = (f"Generate a list of vendors for {vendor_type} within a budget of {budget} "
-                      f"in {location}. Include the name of the vendor and a short description.")
+                      f"in {location}. Include the name of the vendor and a short description. Please include links from where the descriptions are curated, and contact information of vendors")
 
 
         response = clients.chat.completions.create(

@@ -12,6 +12,7 @@ import GenerateVendors from './components/GenerateVendors/GenerateVendors';
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState(null);
+  const [username, setUsername] = useState('John Doe'); // Placeholder for username
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,10 +21,11 @@ const App = () => {
     setIsAuthenticated(!!token);
   }, []);
 
-  const handleLogin = (token) => {
+  const handleLogin = (token, user) => {
     console.log("Login Successful, Token:", token);
     localStorage.setItem('token', token);
     setIsAuthenticated(true);
+    setUsername(user); // Set the username
     navigate('/');
   };
 
@@ -59,7 +61,14 @@ const App = () => {
         </nav>
         <div className="signup">
           {isAuthenticated ? (
-            <button className="signup-btn" onClick={handleLogout}>Logout</button>
+            <div className="user-menu">
+              <div className="username">{username}</div>
+              <div className="user-options">
+                <button onClick={() => alert('Settings')}>Settings</button>
+                <button onClick={() => alert('About Me')}>About Me</button>
+                <button onClick={handleLogout}>Logout</button>
+              </div>
+            </div>
           ) : (
             <button className="signup-btn" onClick={() => navigate('/signup')}>Sign up / Log in</button>
           )}
@@ -70,7 +79,7 @@ const App = () => {
           <h2>Your Personal Wedding Workspace</h2>
         </header>
         <Routes>
-          <Route path="/signup" element={<Signup />} />
+          <Route path="/signup" element={<Signup onSignup={handleLogin} />} />
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/" element={isAuthenticated ? (
             <>
