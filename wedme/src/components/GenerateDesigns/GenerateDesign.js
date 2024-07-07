@@ -1,5 +1,18 @@
 import React, { useState } from 'react';
-import styles from './GenerateDesigns.module.css';  
+import {
+  Box,
+  Button,
+  Container,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Typography,
+  Card,
+  CardContent,
+  CardMedia
+} from '@mui/material';
+import { FaDownload } from 'react-icons/fa';
+import { SaveAlt as SaveAltIcon } from '@mui/icons-material';
 
 const GenerateDesign = () => {
   const [description, setDescription] = useState('');
@@ -40,31 +53,75 @@ const GenerateDesign = () => {
     }
   };
 
+  const handleDownload = (url) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'generated-design.png'; // or 'generated-design.jpg'
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
-    <div className={styles.generateDesign}>
-      <h3 className={styles.title}>Generate Venue Designs</h3>
-      <div className={styles.inputContainer}>
-        <input
-          className={styles.input}
-          type="text"
-          placeholder="Enter the venue design description..Ex: mandap design for an outdoor beach wedding"
-          onKeyDown={handleUserInput}
-        />
-      </div>
-      <div className={styles.chatbox}>
+    <Container maxWidth="md">
+      <Typography variant="h4" gutterBottom>
+        Generate Venue Designs
+      </Typography>
+      <TextField
+        fullWidth
+        variant="outlined"
+        placeholder="Enter the venue design description..Ex: mandap design for an outdoor beach wedding"
+        onKeyDown={handleUserInput}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton onClick={handleGenerateDesign} edge="end">
+                <SaveAltIcon />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+        sx={{ mb: 3 }}
+      />
+      <Box sx={{ mb: 3 }}>
         {messages.map((msg, index) => (
-          <p key={index} className={msg.sender === 'ai' ? styles.aiMessage : styles.userMessage}>
+          <Typography
+            key={index}
+            variant="body1"
+            sx={{
+              backgroundColor: msg.sender === 'ai' ? '#d0eaff' : '#e1ffe0',
+              p: 2,
+              borderRadius: 2,
+              mb: 1,
+              textAlign: msg.sender === 'ai' ? 'left' : 'right',
+            }}
+          >
             {msg.text}
-          </p>
+          </Typography>
         ))}
-        {imageUrl && (
-          <div className={styles.generatedImage}>
-            <h4>Generated Image:</h4>
-            <img src={imageUrl} alt="Generated" style={{ maxWidth: '100%', height: 'auto' }} />
-          </div>
-        )}
-      </div>
-    </div>
+      </Box>
+      {imageUrl && (
+        <Card>
+          <CardMedia
+            component="img"
+            image={imageUrl}
+            alt="Generated"
+            sx={{ maxWidth: '100%', height: 'auto' }}
+          />
+          <CardContent sx={{ textAlign: 'center' }}>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<FaDownload />}
+              onClick={() => handleDownload(imageUrl)}
+            >
+              Download
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+    </Container>
   );
 };
 

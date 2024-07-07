@@ -1,11 +1,11 @@
-// Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { TextField, Button, Container, Typography, Box } from '@mui/material';
 
 const Login = ({ onLogin }) => {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -15,7 +15,7 @@ const Login = ({ onLogin }) => {
       const response = await fetch('http://127.0.0.1:5000/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, email, password }),
       });
 
       if (response.ok) {
@@ -32,18 +32,47 @@ const Login = ({ onLogin }) => {
   };
 
   return (
-    <div className="login">
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
-        <label>Username:</label>
-        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
-        <label>Email:</label>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <label>Password:</label>
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        <button type="submit">Login</button>
-      </form>
-    </div>
+    <Container maxWidth="sm">
+      <Box mt={5} p={3} bgcolor="white" borderRadius={5} boxShadow={3}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Login
+        </Typography>
+        <form onSubmit={handleLogin}>
+          <TextField
+            label="Username"
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            fullWidth
+            required
+            margin="normal"
+          />
+          <TextField
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            fullWidth
+            required
+            margin="normal"
+          />
+          <TextField
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            fullWidth
+            required
+            margin="normal"
+          />
+          <Box mt={3}>
+            <Button type="submit" variant="contained" color="primary" fullWidth>
+              Login
+            </Button>
+          </Box>
+        </form>
+      </Box>
+    </Container>
   );
 };
 
