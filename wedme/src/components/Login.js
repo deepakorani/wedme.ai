@@ -1,9 +1,11 @@
+// Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Login = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -19,7 +21,7 @@ const Login = ({ onLogin }) => {
       if (response.ok) {
         const data = await response.json();
         console.log("Login successful, received token:", data.token);
-        onLogin(data.token);
+        onLogin(data.token, username);
         navigate('/');
       } else {
         console.error('Login failed', response.statusText);
@@ -33,6 +35,8 @@ const Login = ({ onLogin }) => {
     <div className="login">
       <h2>Login</h2>
       <form onSubmit={handleLogin}>
+        <label>Username:</label>
+        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
         <label>Email:</label>
         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         <label>Password:</label>
