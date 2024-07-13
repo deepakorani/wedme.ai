@@ -94,11 +94,12 @@ def generate_vendors():
         # Construct the prompt based on the inputs
          # Construct the prompt based on the inputs
         user_input = (f"Generate a list of vendors for {vendor_type} within a budget of {budget} "
-                      f"in {location}. Include the name of the vendor and a short description. Please include links from where the descriptions are curated, and contact information of vendors")
+                      f"in {location}. Include the name of the vendor and a short description. "
+                      f"Please include links such as  website and instagram reference, etc from where the descriptions are curated and contact information of vendors. Please do not add references which are invalid.")
 
 
         response = clients.chat.completions.create(
-            model="gpt-3.5-turbo",  # Ensure the model name is correct
+            model="gpt-4o",  # Ensure the model name is correct
             messages=[{"role": "user", "content": user_input}]
         )
         message_content = response.choices[0].message.content
