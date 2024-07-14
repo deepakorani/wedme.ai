@@ -6,13 +6,19 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-body, html {
+html, body {
   height: 100%;
+  width: 100%;
   display: flex;
   justify-content: center;
-  font-family: 'Roboto Mono', monospace;
   align-items: center;
+  font-family: 'Roboto Mono', monospace;
   background-color: #f0e6ff;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
 }
 
 .container {
@@ -30,22 +36,23 @@ body, html {
   justify-content: space-between;
   padding: 20px;
   border-radius: 10px 0 0 10px;
+  flex-shrink: 0;
 }
 
 .wedme {
   font-weight: 500;
   color: #7961b4;
-  font-family: sans-serif; /* Apply Circular font */
+  font-family: sans-serif;
 }
 
 .header-title {
   text-align: center;
   font-weight: 500;
   color: #7961b4;
-  white-space: nowrap; /* Prevents the text from wrapping */
-  overflow: hidden; /* Ensures text is contained */
-  text-overflow: ellipsis; /* Adds ellipsis if text overflows */
-  font-family: sans-serif; /* Apply Circular font */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: sans-serif;
 }
 
 .logo {
@@ -77,7 +84,6 @@ body, html {
 }
 
 .signup {
-  
   text-align: center;
 }
 
@@ -162,7 +168,7 @@ body, html {
   position: relative;
   display: inline-block;
   color: #fff;
-  margin-top: auto; /* Ensures it sticks to the bottom */
+  margin-top: auto;
 }
 
 .username {
@@ -177,7 +183,7 @@ body, html {
 .user-options {
   display: none;
   position: absolute;
-  bottom: 100%; /* Show above the username */
+  bottom: 100%;
   background: #fff;
   color: #000;
   border-radius: 5px;
@@ -229,6 +235,6 @@ body, html {
 
 .nav-icon {
   margin-right: 10px;
-  font-size: 18px; /* Adjust the size as needed */
+  font-size: 18px;
   vertical-align: middle;
 }

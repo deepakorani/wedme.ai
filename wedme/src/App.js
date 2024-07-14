@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import './App.css';
-import { FaUsers, FaBuilding, FaClipboard, FaUtensils, FaHistory } from 'react-icons/fa';
+import { FaUsers, FaBuilding, FaClipboard, FaUtensils } from 'react-icons/fa';
 import GenerateDesign from './components/GenerateDesigns/GenerateDesign';
 import GenerateCards from './components/GenerateCards/GenerateCards';
 import GenerateMenu from './components/GenerateMenu/GenerateMenu';
@@ -16,21 +16,18 @@ const App = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("App Component Mounted");
     const token = localStorage.getItem('token');
     setIsAuthenticated(!!token);
   }, []);
 
   const handleLogin = (token, user) => {
-    console.log("Login Successful, Token:", token);
     localStorage.setItem('token', token);
     setIsAuthenticated(true);
-    setUsername(user); // Set the username
+    setUsername(user);
     navigate('/');
   };
 
   const handleLogout = () => {
-    console.log("Logging Out");
     localStorage.removeItem('token');
     setIsAuthenticated(false);
     navigate('/login');
@@ -55,12 +52,9 @@ const App = () => {
           <button className="nav-item" onClick={() => setSelectedFeature('generateMenu')}>
             <FaUtensils className="nav-icon" /> Generate Catering Menu
           </button>
-          {/* <button className="nav-item">
-            <FaHistory className="nav-icon" /> Chat History
-          </button> */}
         </nav>
         <div className="signup">
-          {/* {isAuthenticated ? (
+          {isAuthenticated ? (
             <div className="user-menu">
               <div className="username">{username}</div>
               <div className="user-options">
@@ -71,7 +65,7 @@ const App = () => {
             </div>
           ) : (
             <button className="signup-btn" onClick={() => navigate('/signup')}>Sign up / Log in</button>
-          )} */}
+          )}
         </div>
       </aside>
       <main className="main-content">
