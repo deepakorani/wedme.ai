@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { FaUtensils, FaListAlt, FaCarrot, FaIceCream } from 'react-icons/fa';
+import { Form, Input, Button, Typography, Spin, Tooltip, Row, Col } from 'antd';
 import styles from './GenerateMenu.module.css';
-import Tooltip from './Tooltip';
+
+const { Title } = Typography;
 
 const GenerateMenu = () => {
   const [cuisine, setCuisine] = useState('');
@@ -60,89 +62,90 @@ const GenerateMenu = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.mainContent}>
-        <div className={styles.formContainer}>
-          <h1>Menu Generator</h1>
-          <div className={styles.form}>
-            <div className={styles.inputGroup}>
-              <label className={styles.label}><FaUtensils /> Cuisine: <Tooltip text="Enter the type of cuisine you want, e.g., Italian, Indian" /></label>
-              <input
-                type="text"
-                value={cuisine}
-                onChange={e => setCuisine(e.target.value)}
-                className={styles.input}
-              />
-            </div>
-            <div className={styles.inputGroup}>
-              <label className={styles.label}><FaListAlt /> Number of Entrees: <Tooltip text="Enter the number of main course dishes" /></label>
-              <input
-                type="number"
-                value={numEntrees}
-                onChange={e => setNumEntrees(e.target.value)}
-                className={styles.input}
-              />
-            </div>
-            <div className={styles.inputGroup}>
-              <label className={styles.label}><FaCarrot /> Number of Appetizers: <Tooltip text="Enter the number of appetizer dishes" /></label>
-              <input
-                type="number"
-                value={numAppetizers}
-                onChange={e => setNumAppetizers(e.target.value)}
-                className={styles.input}
-              />
-            </div>
-            <div className={styles.inputGroup}>
-              <label className={styles.label}><FaIceCream /> Number of Desserts: <Tooltip text="Enter the number of dessert dishes" /></label>
-              <input
-                type="number"
-                value={numDesserts}
-                onChange={e => setNumDesserts(e.target.value)}
-                className={styles.input}
-              />
-            </div>
-            <button className={styles.button} onClick={sendPrompt} disabled={loading}>
-              {loading ? 'Loading...' : 'Generate Menu'}
-            </button>
+      {/* <Row gutter={16}> */}
+        {/* <Col xs={24} lg={8}> */}
+          {/* <div className={styles.formContainer}> */}
+            <Title level={2}>Menu Generator</Title>
+            <Form layout="vertical">
+              <Form.Item
+                label={<span><FaUtensils /> Cuisine <Tooltip title="Enter the type of cuisine you want, e.g., Italian, Indian"><span className={styles.tooltipIcon}>?</span></Tooltip></span>}
+              >
+                <Input
+                  value={cuisine}
+                  onChange={e => setCuisine(e.target.value)}
+                />
+              </Form.Item>
+              <Form.Item
+                label={<span><FaListAlt /> Number of Entrees <Tooltip title="Enter the number of main course dishes"><span className={styles.tooltipIcon}>?</span></Tooltip></span>}
+              >
+                <Input
+                  type="number"
+                  value={numEntrees}
+                  onChange={e => setNumEntrees(e.target.value)}
+                />
+              </Form.Item>
+              <Form.Item
+                label={<span><FaCarrot /> Number of Appetizers <Tooltip title="Enter the number of appetizer dishes"><span className={styles.tooltipIcon}>?</span></Tooltip></span>}
+              >
+                <Input
+                  type="number"
+                  value={numAppetizers}
+                  onChange={e => setNumAppetizers(e.target.value)}
+                />
+              </Form.Item>
+              <Form.Item
+                label={<span><FaIceCream /> Number of Desserts <Tooltip title="Enter the number of dessert dishes"><span className={styles.tooltipIcon}>?</span></Tooltip></span>}
+              >
+                <Input
+                  type="number"
+                  value={numDesserts}
+                  onChange={e => setNumDesserts(e.target.value)}
+                />
+              </Form.Item>
+              <Button className={styles.generateMenu} onClick={sendPrompt} disabled={loading} block>
+                {loading ? <Spin /> : 'Generate Menu'}
+              </Button>
+            </Form>
+            {response.error && <p className={styles.error}>{response.error}</p>}
+          {/* </div> */}
+        {/* </Col> */}
+        {/* <Col xs={24} lg={16}> */}
+          <div className={styles.resultsContainer}>
+            {response.entrees.length > 0 && (
+              <div className={styles.card}>
+                <Title level={3}>Entrees</Title>
+                <ul className={styles.list}>
+                  {response.entrees.map((entree, index) => (
+                    <li key={index}>{entree}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {response.appetizers.length > 0 && (
+              <div className={styles.card}>
+                <Title level={3}>Appetizers</Title>
+                <ul className={styles.list}>
+                  {response.appetizers.map((appetizer, index) => (
+                    <li key={index}>{appetizer}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {response.desserts.length > 0 && (
+              <div className={styles.card}>
+                <Title level={3}>Desserts</Title>
+                <ul className={styles.list}>
+                  {response.desserts.map((dessert, index) => (
+                    <li key={index}>{dessert}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
-          {response.error && <p className={styles.error}>{response.error}</p>}
-          {response.success && <p className={styles.success}>{response.success}</p>}
-        </div>
-        <div className={styles.resultsContainer}>
-          {response.entrees.length > 0 && (
-            <div className={styles.card}>
-              <h2>Entrees</h2>
-              <ul className={styles.list}>
-                {response.entrees.map((entree, index) => (
-                  <li key={index}>{entree}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {response.appetizers.length > 0 && (
-            <div className={styles.card}>
-              <h2>Appetizers</h2>
-              <ul className={styles.list}>
-                {response.appetizers.map((appetizer, index) => (
-                  <li key={index}>{appetizer}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {response.desserts.length > 0 && (
-            <div className={styles.card}>
-              <h2>Desserts</h2>
-              <ul className={styles.list}>
-                {response.desserts.map((dessert, index) => (
-                  <li key={index}>{dessert}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      </div>
+        {/* </Col> */}
+      {/* </Row> */}
     </div>
   );
 };
 
 export default GenerateMenu;
-

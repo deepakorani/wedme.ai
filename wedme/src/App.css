@@ -10,6 +10,7 @@ body, html {
   height: 100%;
   display: flex;
   justify-content: center;
+  font-family: 'Roboto Mono', monospace;
   align-items: center;
   background-color: #f0e6ff;
 }
@@ -22,13 +23,29 @@ body, html {
 
 .sidebar {
   width: 250px;
-  background-color: #663399;
+  background-color: #fff;
   color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 20px;
   border-radius: 10px 0 0 10px;
+}
+
+.wedme {
+  font-weight: 500;
+  color: #7961b4;
+  font-family: sans-serif; /* Apply Circular font */
+}
+
+.header-title {
+  text-align: center;
+  font-weight: 500;
+  color: #7961b4;
+  white-space: nowrap; /* Prevents the text from wrapping */
+  overflow: hidden; /* Ensures text is contained */
+  text-overflow: ellipsis; /* Adds ellipsis if text overflows */
+  font-family: sans-serif; /* Apply Circular font */
 }
 
 .logo {
@@ -45,7 +62,7 @@ body, html {
 }
 
 .nav-item {
-  background: #8a4de3;
+  background: #7961b4;
   border: none;
   padding: 12px;
   color: #fff;
@@ -60,6 +77,7 @@ body, html {
 }
 
 .signup {
+  
   text-align: center;
 }
 
@@ -102,7 +120,6 @@ body, html {
   width: 300px;
   margin: 100px auto;
   padding: 20px;
-  border: 1px solid #8a4de3;
   border-radius: 5px;
   background: rgba(255, 255, 255, 0.495);
 }

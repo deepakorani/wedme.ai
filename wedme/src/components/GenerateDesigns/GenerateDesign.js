@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import styles from './GenerateDesigns.module.css';  
+import { Input, Typography, Card, Row, Col, message } from 'antd';
+import styles from './GenerateDesigns.module.css';
+
+const { Title } = Typography;
 
 const GenerateDesign = () => {
   const [description, setDescription] = useState('');
@@ -28,6 +31,7 @@ const GenerateDesign = () => {
     } catch (error) {
       console.error('Error:', error);
       setMessages([...messages, { text: 'AI: Sorry, there was an error generating the design.', sender: 'ai' }]);
+      message.error('There was an error generating the design.');
     }
   };
 
@@ -42,13 +46,12 @@ const GenerateDesign = () => {
 
   return (
     <div className={styles.generateDesign}>
-      <h3 className={styles.title}>Generate Venue Designs</h3>
+      <Title level={2} className={styles.title}>Generate Venue Designs</Title>
       <div className={styles.inputContainer}>
-        <input
+        <Input
           className={styles.input}
-          type="text"
           placeholder="Enter the venue design description..Ex: mandap design for an outdoor beach wedding"
-          onKeyDown={handleUserInput}
+          onPressEnter={handleUserInput}
         />
       </div>
       <div className={styles.chatbox}>
@@ -59,7 +62,7 @@ const GenerateDesign = () => {
         ))}
         {imageUrl && (
           <div className={styles.generatedImage}>
-            <h4>Generated Image:</h4>
+            <Title level={4}>Generated Image:</Title>
             <img src={imageUrl} alt="Generated" style={{ maxWidth: '100%', height: 'auto' }} />
           </div>
         )}

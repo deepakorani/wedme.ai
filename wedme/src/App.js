@@ -5,8 +5,8 @@ import { FaUsers, FaBuilding, FaClipboard, FaUtensils, FaHistory } from 'react-i
 import GenerateDesign from './components/GenerateDesigns/GenerateDesign';
 import GenerateCards from './components/GenerateCards/GenerateCards';
 import GenerateMenu from './components/GenerateMenu/GenerateMenu';
-import Signup from './components/Signup';
-import Login from './components/Login';
+import Signup from './components/Signup/Signup';
+import Login from './components/Login/Login';
 import GenerateVendors from './components/GenerateVendors/GenerateVendors';
 
 const App = () => {
@@ -40,7 +40,7 @@ const App = () => {
     <div className="container">
       <aside className="sidebar">
         <div className="logo">
-          <h1>Wedme.ai</h1>
+          <h2 className="wedme">wedme.ai</h2>
         </div>
         <nav className="nav">
           <button className="nav-item" onClick={() => setSelectedFeature('generateVendors')}>
@@ -55,12 +55,12 @@ const App = () => {
           <button className="nav-item" onClick={() => setSelectedFeature('generateMenu')}>
             <FaUtensils className="nav-icon" /> Generate Catering Menu
           </button>
-          <button className="nav-item">
+          {/* <button className="nav-item">
             <FaHistory className="nav-icon" /> Chat History
-          </button>
+          </button> */}
         </nav>
         <div className="signup">
-          {isAuthenticated ? (
+          {/* {isAuthenticated ? (
             <div className="user-menu">
               <div className="username">{username}</div>
               <div className="user-options">
@@ -71,12 +71,12 @@ const App = () => {
             </div>
           ) : (
             <button className="signup-btn" onClick={() => navigate('/signup')}>Sign up / Log in</button>
-          )}
+          )} */}
         </div>
       </aside>
       <main className="main-content">
         <header className="header">
-          <h2>Your Personal Wedding Workspace</h2>
+          <h2 className="header-title">Your Personal Wedding Workspace</h2>
         </header>
         <Routes>
           <Route path="/signup" element={<Signup onSignup={handleLogin} />} />

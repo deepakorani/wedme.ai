@@ -1,4 +1,4 @@
-/* GenerateDesign.module.css */
+/* GenerateDesigns.module.css */
 .generateDesign {
   display: flex;
   flex-direction: column;
@@ -21,8 +21,6 @@
   width: 100%;
   padding: 8px;
   margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
 }
 
 .chatbox {

@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
+import { Form, Input, Button, Select, Typography, message } from 'antd';
 import styles from './GenerateCards.module.css';
+
+const { Title, Text } = Typography;
+const { Option } = Select;
 
 const GenerateCards = () => {
   const [eventType, setEventType] = useState('');
@@ -27,6 +31,7 @@ const GenerateCards = () => {
       setStage('add_instructions'); // Move to the add instructions stage
     } catch (error) {
       console.error('Error:', error);
+      message.error('There was an error processing your request.');
       setMessages([...messages, { text: 'AI: Sorry, there was an error processing your request.', sender: 'ai' }]);
     }
   };
@@ -61,6 +66,7 @@ const GenerateCards = () => {
       }
     } catch (error) {
       console.error('Error:', error);
+      message.error('There was an error generating the image.');
       setMessages([...messages, { text: 'AI: Sorry, there was an error generating the image.', sender: 'ai' }]);
     }
   };
@@ -79,79 +85,73 @@ const GenerateCards = () => {
 
   return (
     <div className={styles.container}>
-      <h3>Generate Cards</h3>
+      <Title level={2}>Generate Cards</Title>
       <div className={styles.filterContainer}>
         {stage === 'select_event' && (
-          <>
-            <label className={styles.label}>
-              Event Type:
-              <select className={styles.select} value={eventType} onChange={(e) => setEventType(e.target.value)}>
-                <option value="">Select Event Type</option>
-                <option value="Engagement Party">Engagement Party</option>
-                <option value="Bridal Shower">Bridal Shower</option>
-                <option value="Wedding Ceremony">Wedding Ceremony</option>
-              </select>
-            </label>
-            <label className={styles.label}>
-              Theme:
-              <select className={styles.select} value={theme} onChange={(e) => setTheme(e.target.value)}>
-                <option value="">Select Theme</option>
-                <option value="modern">Modern</option>
-                <option value="traditional">Traditional</option>
-                <option value="vintage">Vintage</option>
-              </select>
-            </label>
-            <label className={styles.label}>
-              Couple's Name:
-              <input
-                type="text"
+          <Form layout="vertical">
+            <Form.Item label="Event Type">
+              <Select value={eventType} onChange={setEventType} placeholder="Select Event Type">
+                <Option value="Engagement Party">Engagement Party</Option>
+                <Option value="Bridal Shower">Bridal Shower</Option>
+                <Option value="Wedding Ceremony">Wedding Ceremony</Option>
+              </Select>
+            </Form.Item>
+            <Form.Item label="Theme">
+              <Select value={theme} onChange={setTheme} placeholder="Select Theme">
+                <Option value="modern">Modern</Option>
+                <Option value="traditional">Traditional</Option>
+                <Option value="vintage">Vintage</Option>
+              </Select>
+            </Form.Item>
+            <Form.Item label="Couple's Name">
+              <Input
                 value={coupleName}
                 onChange={(e) => setCoupleName(e.target.value)}
                 placeholder="Enter couple's name"
               />
-            </label>
-            <label className={styles.label}>
-              Event Location:
-              <input
-                type="text"
+            </Form.Item>
+            <Form.Item label="Event Location">
+              <Input
                 value={eventLocation}
                 onChange={(e) => setEventLocation(e.target.value)}
                 placeholder="Enter event location"
               />
-            </label>
-            <label className={styles.label}>
-              Event Date:
-              <input
-                type="text"
+            </Form.Item>
+            <Form.Item label="Event Date">
+              <Input
                 value={eventDate}
                 onChange={(e) => setEventDate(e.target.value)}
                 placeholder="Enter event date"
               />
-            </label>
-            <button className={styles.button} onClick={handleSelectEvent}>Finalize Instructions for the Event</button>
-          </>
+            </Form.Item>
+            <Button className={styles.finalizeInstructions} onClick={handleSelectEvent}>Finalize Instructions for the Event</Button>
+          </Form>
         )}
         {stage === 'add_instructions' && (
-          <div className="input-container">
-            <input type="text" placeholder="Enter any additional instructions..." onKeyDown={handleUserInput} />
-          </div>
+          <Input
+            type="text"
+            placeholder="Enter any additional instructions..."
+            onKeyDown={handleUserInput}
+          />
         )}
         {stage === 'add_photo' && (
-          <div className="input-container">
-            <input type="text" placeholder="Enter optional photo URL or press Enter to skip..." onKeyDown={handleUserInput} />
-          </div>
+          <Input
+            type="text"
+            placeholder="Enter optional photo URL or press Enter to skip..."
+            onKeyDown={handleUserInput}
+          />
         )}
       </div>
       {stage !== 'select_event' && (
         <div className={styles.chatbox}>
           {messages.map((msg, index) => (
-            <p key={index} className={msg.sender === 'ai' ? styles.aiMessage : styles.userMessage}>
+            <Text key={index} className={msg.sender === 'ai' ? styles.aiMessage : styles.userMessage}>
               {msg.text}
-            </p>
+            </Text>
           ))}
           {imageUrl && (
             <div className="generated-image">
-              <h4>Generated Image:</h4>
+              <Title level={4}>Generated Image:</Title>
               <img src={imageUrl} alt="Generated" style={{ maxWidth: '100%', height: 'auto' }} />
             </div>
           )}
