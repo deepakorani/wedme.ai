@@ -13,6 +13,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import openai
 import os
 from dotenv import load_dotenv
+from sentence_transformers import SentenceTransformer
+import pinecone
+import pandas as pd
 
 load_dotenv()
 
@@ -31,6 +34,13 @@ prompt_template = PromptTemplate(
 chain = LLMChain(llm=llm, prompt=prompt_template)
 
 bcrypt = Bcrypt(app)
+
+# Initialize Pinecone and load model (do this once at startup)
+API_KEY = "43e2bb20-aced-41b0-88c2-d1631a0b1066"
+ENVIRONMENT = "pinecone_environment"
+pinecone.init(api_key=API_KEY, environment=ENVIRONMENT)
+index = pinecone.Index("venues")
+model = SentenceTransformer('all-MiniLM-L6-v2')
 
 # Configurations
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
@@ -183,6 +193,28 @@ def generate_image():
     except Exception as e:
         print(f"Exception: {e}")
         return jsonify({'message': 'Error: Unable to process your request'}), 500
+
+@app.route('/api/search_venues', methods=['POST'])
+def search_venues():
+    data = request.json
+    query_text = data.get('query', '')
+    top_k = data.get('top_k', 5)
+
+    query_embedding = model.encode([query_text])[0]
+    results = index.query(query_embedding, top_k=top_k, include_metadata=True)
+
+    venues = []
+    for result in results['matches']:
+        venues.append({
+            'score': result['score'],
+            'name': result['metadata']['name'],
+            'city': result['metadata']['city'],
+            'state': result['metadata']['state'],
+            'max_capacity': result['metadata']['max_capacity'],
+            'starting_price': result['metadata']['starting_price_cents'] / 100
+        })
+
+    return jsonify(venues)
 
 @app.route('/api/generate_design', methods=['POST'])
 def generate_design():

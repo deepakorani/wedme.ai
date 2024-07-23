@@ -8,6 +8,7 @@ import Signup from './components/Signup';
 import Login from './components/Login';
 import GenerateVendors from './components/GenerateVendors/GenerateVendors';
 import Workspace from './components/Workspace/Workspace';
+import VenueSearch from './components/VenueSearch/VenueSearch';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -81,6 +82,10 @@ const App = () => {
               <ListItemIcon><FaHistory /></ListItemIcon>
               <ListItemText primary="Chat History" />
             </ListItem>
+            <ListItem button onClick={() => navigate('/search_venues')}>
+              <ListItemIcon><FaHistory /></ListItemIcon>
+              <ListItemText primary="VenueSearch" />
+            </ListItem>
           </List>
           {isAuthenticated && (
             <Box sx={{ mt: 'auto', p: 2, textAlign: 'center', color: 'purple' }}>
@@ -122,6 +127,7 @@ const App = () => {
             <Route path="/generate-vendors" element={isAuthenticated ? <GenerateVendors /> : <Navigate to="/login" />} />
             <Route path="/generate-designs" element={isAuthenticated ? <GenerateDesign /> : <Navigate to="/login" />} />
             <Route path="/generate-menus" element={isAuthenticated ? <GenerateMenu /> : <Navigate to="/login" />} />
+            <Route path="/search_venues" element={isAuthenticated ? <VenueSearch /> : <Navigate to="/login" />} />
             {/* Add more routes as needed */}
           </Routes>
         </main>
