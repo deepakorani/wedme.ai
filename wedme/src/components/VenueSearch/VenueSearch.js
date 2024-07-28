@@ -14,29 +14,14 @@ const VenueSearch = () => {
   const handleSearch = async () => {
     setLoading(true);
     try {
-      console.log('Sending request with query:', query);
-      const response = await axios.post('http://localhost:5000/api/searchvenues', 
-        { query, top_k: 5 },
-        { 
-          headers: { 'Content-Type': 'application/json' },
-          withCredentials: true
+      const response = await axios.post('http://127.0.0.1:5000/api/searchvenues', { query, top_k: 5 }, {
+        headers: {
+          'Content-Type': 'application/json'
         }
-      );
-      console.log('Received response:', response.data);
+      });
       setVenues(response.data);
     } catch (error) {
-      console.error('Error searching venues:', error);
-      if (error.response) {
-        console.error('Response data:', error.response.data);
-        console.error('Response status:', error.response.status);
-        setError(`Error: ${error.response.status} - ${error.response.data.error || 'Unknown error'}`);
-      } else if (error.request) {
-        console.error('No response received:', error.request);
-        setError('No response received from server');
-      } else {
-        console.error('Error setting up request:', error.message);
-        setError(`Error: ${error.message}`);
-      }
+      setError('Error searching venues');
       setOpenSnackbar(true);
     } finally {
       setLoading(false);

@@ -10,7 +10,6 @@ from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
 from openai import OpenAI as op_object
 from werkzeug.security import generate_password_hash, check_password_hash
-import openai
 import pinecone
 import os
 from dotenv import load_dotenv
@@ -19,7 +18,6 @@ from pinecone import Pinecone, Index, ServerlessSpec
 import pandas as pd
 
 load_dotenv()
-
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
@@ -40,8 +38,7 @@ if not PINECONE_ENVIRONMENT:
 
 # Initialize the OpenAI client
 openai.api_key = OPENAI_API_KEY
-clients = op_object(api_key= OPENAI_API_KEY)
-# clients = OpenAI(api_key=OPENAI_API_KEY)
+clients = op_object(api_key=OPENAI_API_KEY)
 llm = OpenAI(api_key=OPENAI_API_KEY)
 prompt_template = PromptTemplate(
     input_variables=["event_type", "theme", "event_date"],
@@ -66,41 +63,6 @@ except Exception as e:
     print(f"Error connecting to Pinecone index: {str(e)}")
     index = None
 
-# if 'venues' not in pc.list_indexes().names():
-#     index_info = pc.create_index(
-#         name='venues',
-#         dimension=768,  # Dimension should match the embedding model used
-#         metric='cosine',
-#         spec=ServerlessSpec(
-#             cloud='aws',
-#             region=PINECONE_ENVIRONMENT
-#         )
-#     )
-#     host = index_info.host
-# else:
-#     # If the index already exists, describe it to get the host
-#     index_info = pc.describe_index("venues")
-#     host = index_info.host
-
-# index = pc.Index("venues", host=host)
-# model = SentenceTransformer('all-MiniLM-L6-v2')
-
-# # Connect to the Pinecone index
-# # index_name = 'venues'
-# # index = pc.Index(index_name)
-
-# # Initialize Pinecone
-# pc = Pinecone(api_key=PINECONE_API_KEY)
-
-# # Connect to the Pinecone index
-# index_name = 'venues'
-# try:
-#     index = pc.Index(index_name)
-#     print(f"Successfully connected to Pinecone index: {index_name}")
-# except Exception as e:
-#     print(f"Error connecting to Pinecone index: {str(e)}")
-#     # Handle the error appropriately
-
 # Configurations
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -119,6 +81,7 @@ class User(UserMixin, db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+model = SentenceTransformer('all-MiniLM-L6-v2')
 # Routes for user authentication
 @app.route('/signup', methods=['POST'])
 def signup():
