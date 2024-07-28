@@ -218,6 +218,7 @@ def generate_image():
 def search_venues():
     try:
         data = request.json
+        print('data is', data)
         query_text = data.get('query', '')
         top_k = data.get('top_k', 5)
         
@@ -242,9 +243,10 @@ def search_venues():
                 'city': result['metadata'].get('city', 'N/A'),
                 'state': result['metadata'].get('state', 'N/A'),
                 'max_capacity': result['metadata'].get('max_capacity', 'N/A'),
+                'description': result['metadata'].get('description', 'N/A'),
                 'starting_price': result['metadata'].get('starting_price_cents', 0) / 100
             })
-
+            print('result ', result)
         print(f"Returning {len(venues)} venues")
         return jsonify(venues)
     except Exception as e:

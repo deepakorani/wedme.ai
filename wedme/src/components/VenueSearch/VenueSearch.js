@@ -19,6 +19,7 @@ const VenueSearch = () => {
           'Content-Type': 'application/json'
         }
       });
+      console.log('response.data ',response.data)
       setVenues(response.data);
     } catch (error) {
       setError('Error searching venues');
@@ -59,6 +60,7 @@ const VenueSearch = () => {
             <Typography variant="h6" className={styles.venueTitle}>{venue.name}</Typography>
             <Typography>Location: {venue.city}, {venue.state}</Typography>
             <Typography>Max Capacity: {venue.max_capacity}</Typography>
+            <Typography>Description: {venue.descripton}</Typography>
             <Typography>Starting Price: ${venue.starting_price}</Typography>
             <Typography>Relevance Score: {venue.score.toFixed(2)}</Typography>
           </Box>

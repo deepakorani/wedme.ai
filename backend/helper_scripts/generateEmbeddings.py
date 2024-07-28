@@ -4,13 +4,16 @@ from pinecone import Pinecone, ServerlessSpec
 import numpy as np
 
 # Load your data
-df = pd.read_csv('venues_all.csv')
+df = pd.read_csv('/Users/tanvibhardwaj/Desktop/all_vendors_july28.csv')
 
 # Print columns to verify
 print("Columns in the DataFrame:", df.columns)
 
-# Clean data
-df['description'] = df['description'].fillna('').astype(str)
+# Fill NaNs and convert all columns to string
+df = df.fillna('').astype(str)
+
+# Concatenate all columns into a single text column
+df['combined_text'] = df.apply(lambda row: ' '.join(row.values), axis=1)
 
 # Initialize your model
 model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -18,7 +21,7 @@ embedding_dimension = model.get_sentence_embedding_dimension()
 print(f"Embedding dimension: {embedding_dimension}")
 
 # Generate embeddings
-df['embedding'] = df['description'].apply(lambda x: model.encode(x).tolist())
+df['embedding'] = df['combined_text'].apply(lambda x: model.encode(x).tolist())
 
 # Initialize Pinecone client
 pc = Pinecone(api_key='43e2bb20-aced-41b0-88c2-d1631a0b1066')
@@ -56,15 +59,7 @@ index = pc.Index(index_name)
 # Prepare data for upsert
 data_to_upsert = []
 for i, row in df.iterrows():
-    metadata = {
-        'name': row['name'],
-        'city': row['city'],
-        'state': row['state'],
-        'max_capacity': row['max_capacity'] if not pd.isna(row['max_capacity']) else 0
-    }
-    if 'starting_price_cents' in row and not pd.isna(row['starting_price_cents']):
-        metadata['starting_price'] = row['starting_price_cents']
-    
+    metadata = row.to_dict()
     data_to_upsert.append({
         'id': str(i),
         'values': row['embedding'],
