@@ -11,21 +11,37 @@ from flask_migrate import Migrate
 from openai import OpenAI as op_object
 from werkzeug.security import generate_password_hash, check_password_hash
 import openai
+import pinecone
 import os
 from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
-import pinecone
+from pinecone import Pinecone, Index, ServerlessSpec
 import pandas as pd
 
 load_dotenv()
 
+
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
-CORS(app)
-
+# Ensure the API keys are set
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+PINECONE_ENVIRONMENT = os.getenv("PINECONE_ENVIRONMENT")
+
+if not OPENAI_API_KEY:
+    raise ValueError("The OPENAI_API_KEY environment variable is not set")
+
+if not PINECONE_API_KEY:
+    raise ValueError("The PINECONE_API_KEY environment variable is not set")
+
+if not PINECONE_ENVIRONMENT:
+    raise ValueError("The PINECONE_ENVIRONMENT environment variable is not set")
+
+# Initialize the OpenAI client
 openai.api_key = OPENAI_API_KEY
 clients = op_object(api_key= OPENAI_API_KEY)
+# clients = OpenAI(api_key=OPENAI_API_KEY)
 llm = OpenAI(api_key=OPENAI_API_KEY)
 prompt_template = PromptTemplate(
     input_variables=["event_type", "theme", "event_date"],
@@ -35,12 +51,55 @@ chain = LLMChain(llm=llm, prompt=prompt_template)
 
 bcrypt = Bcrypt(app)
 
+@app.before_request
+def log_request_info():
+    print('Headers: %s', request.headers)
+    print('Body: %s', request.get_data())
+
 # Initialize Pinecone and load model (do this once at startup)
-API_KEY = "43e2bb20-aced-41b0-88c2-d1631a0b1066"
-ENVIRONMENT = "pinecone_environment"
-pinecone.init(api_key=API_KEY, environment=ENVIRONMENT)
-index = pinecone.Index("venues")
-model = SentenceTransformer('all-MiniLM-L6-v2')
+pc = Pinecone(api_key=PINECONE_API_KEY)
+index_name = 'venues'
+try:
+    index = pc.Index(index_name)
+    print(f"Successfully connected to Pinecone index: {index_name}")
+except Exception as e:
+    print(f"Error connecting to Pinecone index: {str(e)}")
+    index = None
+
+# if 'venues' not in pc.list_indexes().names():
+#     index_info = pc.create_index(
+#         name='venues',
+#         dimension=768,  # Dimension should match the embedding model used
+#         metric='cosine',
+#         spec=ServerlessSpec(
+#             cloud='aws',
+#             region=PINECONE_ENVIRONMENT
+#         )
+#     )
+#     host = index_info.host
+# else:
+#     # If the index already exists, describe it to get the host
+#     index_info = pc.describe_index("venues")
+#     host = index_info.host
+
+# index = pc.Index("venues", host=host)
+# model = SentenceTransformer('all-MiniLM-L6-v2')
+
+# # Connect to the Pinecone index
+# # index_name = 'venues'
+# # index = pc.Index(index_name)
+
+# # Initialize Pinecone
+# pc = Pinecone(api_key=PINECONE_API_KEY)
+
+# # Connect to the Pinecone index
+# index_name = 'venues'
+# try:
+#     index = pc.Index(index_name)
+#     print(f"Successfully connected to Pinecone index: {index_name}")
+# except Exception as e:
+#     print(f"Error connecting to Pinecone index: {str(e)}")
+#     # Handle the error appropriately
 
 # Configurations
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
@@ -102,14 +161,12 @@ def generate_vendors():
         location = request.json.get('location', '')
 
         # Construct the prompt based on the inputs
-         # Construct the prompt based on the inputs
         user_input = (f"Generate a list of vendors for {vendor_type} within a budget of {budget} "
                       f"in {location}. Include the name of the vendor and a short description. "
-                      f"Please include links such as  website and instagram reference, etc from where the descriptions are curated and contact information of vendors. Please do not add references which are invalid.")
-
+                      f"Please include links such as website and Instagram reference, etc. from where the descriptions are curated and contact information of vendors. Please do not add references which are invalid.")
 
         response = clients.chat.completions.create(
-            model="gpt-4o",  # Ensure the model name is correct
+            model="gpt-4",  # Ensure the model name is correct
             messages=[{"role": "user", "content": user_input}]
         )
         message_content = response.choices[0].message.content
@@ -129,7 +186,7 @@ def generate_vendors():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/generatemenu', methods=['POST'])
-def generate_():
+def generate_menu():
     try:
         cuisine = request.json.get('cuisine', '')
         num_entrees = request.json.get('numEntrees', 0)
@@ -194,27 +251,44 @@ def generate_image():
         print(f"Exception: {e}")
         return jsonify({'message': 'Error: Unable to process your request'}), 500
 
-@app.route('/api/search_venues', methods=['POST'])
+@app.route('/api/searchvenues', methods=['POST'])
 def search_venues():
-    data = request.json
-    query_text = data.get('query', '')
-    top_k = data.get('top_k', 5)
+    try:
+        data = request.json
+        query_text = data.get('query', '')
+        top_k = data.get('top_k', 5)
+        
+        print(f"Received query: {query_text}, top_k: {top_k}")
 
-    query_embedding = model.encode([query_text])[0]
-    results = index.query(query_embedding, top_k=top_k, include_metadata=True)
+        # Generate query embedding
+        query_embedding = model.encode([query_text])[0].tolist()
+        
+        print(f"Generated embedding of length: {len(query_embedding)}")
 
-    venues = []
-    for result in results['matches']:
-        venues.append({
-            'score': result['score'],
-            'name': result['metadata']['name'],
-            'city': result['metadata']['city'],
-            'state': result['metadata']['state'],
-            'max_capacity': result['metadata']['max_capacity'],
-            'starting_price': result['metadata']['starting_price_cents'] / 100
-        })
+        # Query the Pinecone index
+        results = index.query(vector=query_embedding, top_k=top_k, include_metadata=True)
+        
+        print(f"Pinecone results: {results}")
 
-    return jsonify(venues)
+        # Process the results
+        venues = []
+        for result in results['matches']:
+            venues.append({
+                'score': result['score'],
+                'name': result['metadata'].get('name', 'N/A'),
+                'city': result['metadata'].get('city', 'N/A'),
+                'state': result['metadata'].get('state', 'N/A'),
+                'max_capacity': result['metadata'].get('max_capacity', 'N/A'),
+                'starting_price': result['metadata'].get('starting_price_cents', 0) / 100
+            })
+
+        print(f"Returning {len(venues)} venues")
+        return jsonify(venues)
+    except Exception as e:
+        print(f"Error in search_venues: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/generate_design', methods=['POST'])
 def generate_design():
@@ -238,7 +312,6 @@ def generate_design():
     except Exception as e:
         print(f"Exception: {e}")
         return jsonify({'message': 'Error: Unable to process your request'}), 500
-
 
 if __name__ == '__main__':
     with app.app_context():

@@ -1,0 +1,26 @@
+.container {
+  padding: 20px;
+}
+
+.searchField {
+  margin-bottom: 20px;
+}
+
+.searchButton {
+  margin-bottom: 20px;
+}
+
+.venueBox {
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.venueTitle {
+  font-weight: bold;
+}
+
+.snackbar {
+  bottom: 20px;
+}

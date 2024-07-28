@@ -5,6 +5,18 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+
+
+.drawer {
+  width: 240px; /* Adjust based on your design */
+  flex-shrink: 0;
+}
+
+.drawerPaper {
+  width: 240px; /* Adjust based on your design */
+}
+
+
 body, html {
   height: 100%;
   display: flex;
