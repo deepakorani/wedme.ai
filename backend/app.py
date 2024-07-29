@@ -242,9 +242,10 @@ def search_venues():
                 'name': result['metadata'].get('name', 'N/A'),
                 'city': result['metadata'].get('city', 'N/A'),
                 'state': result['metadata'].get('state', 'N/A'),
+                'min_capacity': result['metadata'].get('min_capacity', 'N/A'),
                 'max_capacity': result['metadata'].get('max_capacity', 'N/A'),
                 'description': result['metadata'].get('description', 'N/A'),
-                'starting_price': result['metadata'].get('starting_price_cents', 0) / 100
+                'starting_price_dollars': result['metadata'].get('starting_price_dollars', 'N/A')
             })
             print('result ', result)
         print(f"Returning {len(venues)} venues")

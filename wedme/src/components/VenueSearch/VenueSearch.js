@@ -60,8 +60,8 @@ const VenueSearch = () => {
             <Typography variant="h6" className={styles.venueTitle}>{venue.name}</Typography>
             <Typography>Location: {venue.city}, {venue.state}</Typography>
             <Typography>Max Capacity: {venue.max_capacity}</Typography>
-            <Typography>Description: {venue.descripton}</Typography>
-            <Typography>Starting Price: ${venue.starting_price}</Typography>
+            <Typography>Description: {venue.description}</Typography>
+            <Typography>Starting Price: ${venue.starting_price_dollars}</Typography>
             <Typography>Relevance Score: {venue.score.toFixed(2)}</Typography>
           </Box>
         ))}

@@ -2,6 +2,7 @@ import pandas as pd
 from sentence_transformers import SentenceTransformer
 from pinecone import Pinecone, ServerlessSpec
 import numpy as np
+import time
 
 # Load your data
 df = pd.read_csv('/Users/tanvibhardwaj/Desktop/all_vendors_july28.csv')
@@ -9,10 +10,11 @@ df = pd.read_csv('/Users/tanvibhardwaj/Desktop/all_vendors_july28.csv')
 # Print columns to verify
 print("Columns in the DataFrame:", df.columns)
 
-# Fill NaNs and convert all columns to string
-df = df.fillna('').astype(str)
+# Fill NaNs and convert specified columns to string
+columns_to_include = ['name', 'city', 'state', 'postal_code', 'min_capacity', 'max_capacity', 'reviews_count', 'average_reviews_rate', 'starting_price_dollars', 'description']
+df = df[columns_to_include].fillna('').astype(str)
 
-# Concatenate all columns into a single text column
+# Concatenate specified columns into a single text column
 df['combined_text'] = df.apply(lambda row: ' '.join(row.values), axis=1)
 
 # Initialize your model
@@ -59,7 +61,19 @@ index = pc.Index(index_name)
 # Prepare data for upsert
 data_to_upsert = []
 for i, row in df.iterrows():
-    metadata = row.to_dict()
+    metadata = {
+        'name': row['name'],
+        'city': row['city'],
+        'state': row['state'],
+        'postal_code': row['postal_code'],
+        'min_capacity': row['min_capacity'],
+        'max_capacity': row['max_capacity'],
+        'reviews_count': row['reviews_count'],
+        'average_reviews_rate': row['average_reviews_rate'],
+        'starting_price_dollars': row['starting_price_dollars'],
+        'description': row['description']
+    }
+    
     data_to_upsert.append({
         'id': str(i),
         'values': row['embedding'],
@@ -70,10 +84,20 @@ for i, row in df.iterrows():
 data_to_upsert = [entry for entry in data_to_upsert if not any(np.isnan(entry['values']))]
 
 # Define a function to upsert data in batches
-def upsert_batches(index, vectors, batch_size=100):
+def upsert_batches(index, vectors, batch_size=100, retries=3):
     for i in range(0, len(vectors), batch_size):
         batch = vectors[i:i + batch_size]
-        index.upsert(vectors=batch)
+        for attempt in range(retries):
+            try:
+                index.upsert(vectors=batch)
+                break
+            except Exception as e:
+                if attempt < retries - 1:
+                    print(f"Retrying batch upsert... ({attempt + 1}/{retries})")
+                    time.sleep(5)  # Wait for 5 seconds before retrying
+                else:
+                    print(f"Failed to upsert batch after {retries} attempts: {e}")
+
 
 # Upsert data to Pinecone in batches
 upsert_batches(index, data_to_upsert, batch_size=100)
